@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Accueil</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#111113">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Accueil">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="face" aria-live="off">
+  <div class="mark">AE</div>
+  <div id="clock" class="clock">--:--</div>
+  <div id="date" class="date">&nbsp;</div>
+</main>
+
+<div id="hz" class="hz" aria-hidden="true"></div>
+
+<div id="menu" class="menu" hidden>
+  <div class="backdrop" data-close></div>
+  <nav class="sheet" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="grip"></div>
+    <a class="item" href="https://memecoinsphere.github.io/vault-iphone/"><span>Coffre-fort</span><i>›</i></a>
+    <a class="item" href="https://memecoinsphere.github.io/camera-masque/"><span>Caméra Masque</span><i>›</i></a>
+    <a class="item off" href="https://memecoinsphere.github.io/gps-offline/" aria-disabled="true" tabindex="-1"><span>GPS</span><em>bientôt</em></a>
+    <a class="item off" href="https://memecoinsphere.github.io/wallet/" aria-disabled="true" tabindex="-1"><span>Wallet crypto</span><em>bientôt</em></a>
+    <button class="close" type="button" data-close>Fermer</button>
+  </nav>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
