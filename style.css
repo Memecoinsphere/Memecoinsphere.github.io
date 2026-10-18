@@ -1,5 +1,6 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#111113;color:#e8e6e1}
+html{touch-action:manipulation}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
   -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
@@ -11,17 +12,17 @@ body{
   position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
-.mark{font-weight:200;letter-spacing:.35em;font-size:13px;opacity:.38;margin-bottom:28px;padding-left:.35em}
+/* Zone du double tap : bloc heure + date, largement agrandi */
+.tap{
+  display:flex;flex-direction:column;align-items:center;
+  padding:56px 40px;min-width:min(92vw,420px);
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;cursor:default;
+}
+.tap *{pointer-events:none}
 .clock{font-weight:200;font-size:clamp(64px,22vw,120px);letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
 .date{margin-top:14px;font-size:15px;font-weight:300;opacity:.55;letter-spacing:.02em}
 
-/* Zone de geste invisible : coin haut-droit, décalée de 50px sous le bord (évite le Centre de contrôle) */
-.hz{
-  position:fixed;z-index:5;right:0;
-  top:calc(env(safe-area-inset-top) + 50px);
-  width:calc(90px + env(safe-area-inset-right));height:90px;
-  touch-action:none;background:transparent;
-}
 
 .menu{position:fixed;inset:0;z-index:10}
 .menu[hidden]{display:none}

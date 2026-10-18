@@ -27,43 +27,47 @@
   window.__menu = { open: openMenu, close: closeMenu, isOpen: function () { return isOpen; } };
 
   menu.addEventListener('click', function (e) {
-    if (e.target.closest('[data-close]')) { e.preventDefault(); closeMenu(); }
+    if (e.target.closest('[data-close]')) { e.preventDefault(); if (performance.now() - openedAt < 400) return; closeMenu(); }
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
 
-  /* ---- Geste d'ouverture : glissé diagonal depuis le coin haut-droit vers le bas-gauche ---- */
-  var MIN_DIST = 100, MAX_MS = 600, MIN_AXIS = 35; // chaque axe doit bouger d'au moins 35px (diagonale)
-  var hz = document.getElementById('hz');
-  var g = null;
+  /* ---- Geste d'ouverture : double tap sur l'horloge ----
+     iOS ne déclenche pas dblclick de façon fiable : on détecte deux "taps" (touchend / pointerup souris)
+     à moins de 350 ms d'intervalle, chacun avec un mouvement < 20 px, proches l'un de l'autre. */
+  var MAX_GAP = 350, MOVE_TOL = 20, NEAR = 60;
+  var tapZone = document.getElementById('tap');
+  var down = null, last = null, openedAt = 0;
 
-  function start(x, y, id) { g = { x: x, y: y, t: performance.now(), id: id }; }
-  function end(x, y) {
-    if (!g) return;
-    var dx = x - g.x, dy = y - g.y, dt = performance.now() - g.t;
-    g = null;
-    if (dt <= MAX_MS && dx <= -MIN_AXIS && dy >= MIN_AXIS && Math.hypot(dx, dy) >= MIN_DIST) openMenu();
+  function tapDown(x, y) { down = { x: x, y: y }; }
+  function tapUp(x, y, ev) {
+    if (!down || isOpen) { down = null; return; }
+    var moved = Math.hypot(x - down.x, y - down.y); down = null;
+    if (moved > MOVE_TOL) { last = null; return; }
+    var now = performance.now();
+    if (last && now - last.t <= MAX_GAP && Math.hypot(x - last.x, y - last.y) <= NEAR) {
+      last = null;
+      if (ev && ev.cancelable) ev.preventDefault();   // pas de clic synthétique sur le fond du menu
+      openedAt = now; openMenu();
+    } else {
+      last = { x: x, y: y, t: now };               // 1er tap : ne fait rien
+    }
   }
-  function findTouch(list, id) { for (var i = 0; i < list.length; i++) if (list[i].identifier === id) return list[i]; return null; }
-
-  hz.addEventListener('touchstart', function (e) {
-    if (isOpen || e.touches.length !== 1) { g = null; return; }
-    e.preventDefault();               // pas de clic fantôme, pas de loupe, pas de défilement
-    var t = e.changedTouches[0]; start(t.clientX, t.clientY, t.identifier);
+  tapZone.addEventListener('touchstart', function (e) {
+    if (e.touches.length !== 1) { down = null; last = null; return; }
+    var t = e.touches[0]; tapDown(t.clientX, t.clientY);
+  }, { passive: true });
+  tapZone.addEventListener('touchmove', function (e) {
+    if (!down) return; var t = e.touches[0];
+    if (Math.hypot(t.clientX - down.x, t.clientY - down.y) > MOVE_TOL) { down = null; last = null; }
+  }, { passive: true });
+  tapZone.addEventListener('touchend', function (e) {
+    var t = e.changedTouches[0]; tapUp(t.clientX, t.clientY, e);
   }, { passive: false });
-  hz.addEventListener('touchmove', function (e) {
-    e.preventDefault();               // bloque défilement / rebond pendant le geste
-    if (g && e.touches.length > 1) g = null;
-  }, { passive: false });
-  hz.addEventListener('touchend', function (e) {
-    if (!g) return;
-    e.preventDefault();
-    var t = findTouch(e.changedTouches, g.id); if (t) end(t.clientX, t.clientY); else g = null;
-  }, { passive: false });
-  hz.addEventListener('touchcancel', function () { g = null; });
-
-  // Repli souris (ordinateur) – même geste au glisser-déposer
-  hz.addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && !isOpen) { start(e.clientX, e.clientY, 'm'); hz.setPointerCapture(e.pointerId); } });
-  hz.addEventListener('pointerup', function (e) { if (e.pointerType === 'mouse' && g && g.id === 'm') end(e.clientX, e.clientY); });
+  tapZone.addEventListener('touchcancel', function () { down = null; last = null; });
+  // Souris / stylet (ordinateur) : les pointeurs tactiles sont déjà gérés par touch*
+  tapZone.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'touch') tapDown(e.clientX, e.clientY); });
+  tapZone.addEventListener('pointerup', function (e) { if (e.pointerType !== 'touch') tapUp(e.clientX, e.clientY, null); });
+  tapZone.addEventListener('dblclick', function (e) { e.preventDefault(); });
 
   // Bloque tout rebond de la page en dehors du menu
   document.addEventListener('touchmove', function (e) { if (!isOpen) e.preventDefault(); }, { passive: false });
