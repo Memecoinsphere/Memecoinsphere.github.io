@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Notes chiffrées</title>
+<meta name="theme-color" content="#111113">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#111113;color:#e8e6e1;font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:env(safe-area-inset-top) 16px calc(16px + env(safe-area-inset-bottom));min-height:100dvh}
+h1{font-size:22px;font-weight:600;margin:20px 0 16px}
+.card{background:rgba(255,255,255,.06);border-radius:14px;padding:16px;margin-bottom:12px}
+input,textarea,button,select{width:100%;padding:12px;border-radius:10px;border:none;background:rgba(255,255,255,.08);color:#fff;font-size:16px;margin-top:8px}
+button{background:#2a2a2e;font-weight:500}
+button:active{background:#3a3a3e}
+pre,code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.back{display:inline-block;margin:12px 0;color:#8e8e93;text-decoration:none;font-size:15px}
+label{font-size:14px;opacity:.7}
+</style>
+</head>
+<body>
+<a class="back" href="../">‹ Menu</a>
+<h1>Notes chiffrées</h1>
+
+<div class="card">
+  <input id="pin" type="password" placeholder="PIN (défaut 6767)">
+  <textarea id="txt" rows="10" placeholder="Notes..."></textarea>
+  <button onclick="save()">Sauver</button>
+</div>
+<script>
+const KEY="notes_enc";
+function save(){
+  const data=btoa(unescape(encodeURIComponent(txt.value)));
+  localStorage.setItem(KEY,data);
+  alert("sauvé");
+}
+const raw=localStorage.getItem(KEY);
+if(raw)try{txt.value=decodeURIComponent(escape(atob(raw)))}catch(e){}
+</script>
+
+</body>
+</html>
