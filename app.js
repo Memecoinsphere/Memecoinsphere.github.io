@@ -73,12 +73,13 @@
   document.addEventListener('touchmove', function (e) { if (!isOpen) e.preventDefault(); }, { passive: false });
 
   /* ---- Fermeture par glissé vers le bas sur la feuille ---- */
+  var grip = menu.querySelector('.grip');
   var s = null;
-  sheet.addEventListener('touchstart', function (e) {
+  grip.addEventListener('touchstart', function (e) {
     if (e.touches.length !== 1) return;
     s = { y: e.touches[0].clientY, t: performance.now(), dy: 0 };
   }, { passive: true });
-  sheet.addEventListener('touchmove', function (e) {
+  grip.addEventListener('touchmove', function (e) {
     if (!s) return;
     e.preventDefault();
     s.dy = Math.max(0, e.touches[0].clientY - s.y);
@@ -90,8 +91,8 @@
     s = null; sheet.classList.remove('drag');
     if (dy > 80 || (dy > 30 && v > 0.5)) closeMenu(); else sheet.style.transform = '';
   }
-  sheet.addEventListener('touchend', sheetEnd);
-  sheet.addEventListener('touchcancel', sheetEnd);
+  grip.addEventListener('touchend', sheetEnd);
+  grip.addEventListener('touchcancel', sheetEnd);
 
   /* Volontairement AUCUN service worker : voir README. On désinscrit toute ancienne
      registration racine éventuelle (scope exactement "/") sans toucher aux sous-apps. */
