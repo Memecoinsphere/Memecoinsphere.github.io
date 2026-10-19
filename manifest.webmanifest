@@ -1,6 +1,6 @@
 {
-  "name": "Accueil",
-  "short_name": "Accueil",
+  "name": "Graph",
+  "short_name": "Graph",
   "lang": "fr",
   "start_url": "/",
   "scope": "/",
